@@ -1,3 +1,9 @@
+/**
+ * lmtool.h
+ * 
+ * Author: Chuck Valenza
+ */
+
 #ifndef LMTOOL_H
 
 #include <stdio.h>

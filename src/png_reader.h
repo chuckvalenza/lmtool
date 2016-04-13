@@ -1,5 +1,7 @@
 /**
- *
+ * png_reader.c
+ * 
+ * Author: Chuck Valenza
  */
 
 #ifndef PNG_READER_H

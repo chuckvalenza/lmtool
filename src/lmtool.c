@@ -1,5 +1,7 @@
 /**
- *
+ * lmtool.c
+ * 
+ * Author: Chuck Valenza
  */
 
 #include <stdio.h>
