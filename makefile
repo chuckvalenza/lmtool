@@ -7,7 +7,7 @@ EXEC = bin/lmtool
 SRCS = $(wildcard src/*.c)
 OBJS = $(addprefix build/,$(notdir $(SRCS:.c=.o)))
 
-default: all
+default: directories all
 
 all: $(OBJS)
 	$(CC) $(CFLAGS) $(LIB) $^ -o $(EXEC)
@@ -15,5 +15,7 @@ all: $(OBJS)
 build/%.o: src/%.c
 	$(CC) $(CFLAGS) $(LIB) -c -o $@ $^
 
+directories:
+	mkdir -p bin build
 clean:
 	-@rm build/*.o build/*.d $(EXEC) 2>/dev/null || true
