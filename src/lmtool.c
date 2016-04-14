@@ -7,7 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "png_reader.h"
+//#include "png_reader.h"
+#include "readpng.h"
+#include "writepng.h"
 
 #define ARG_LENGTH 3
 
@@ -28,7 +30,9 @@ unsigned char* load_png(FILE* infile, long* pWidth, long* pHeight)
         exit(FAIL_BAD_FILE);
     }
 
-    if (png_load_bg_color() != 0) {
+    unsigned char r, g, b;
+
+    if (png_load_bg_color(&r, &g, &b) != 0) {
         exit(FAIL_BAD_FILE);
     }
 }
@@ -43,7 +47,6 @@ int main(int argc, char** argv)
     long image_height;
     long output_width = atol(argv[2]);
     long output_height = atol(argv[3]);
-    long** image_data = NULL;
     FILE* infile = fopen(argv[1], "r");
 
     char filename[1024];
@@ -51,7 +54,7 @@ int main(int argc, char** argv)
 
     printf("%s %ld %ld\n", filename, output_width, output_height);
 
-    image_data = load_png(infile, &image_width, &image_height);
+    load_png(infile, &image_width, &image_height);
 
     return 0;
 }

@@ -21,7 +21,8 @@ void readpng_version_info(void);
 
 int png_init(FILE* infile, long* pWidth, long* pHeight);
 
-int png_load_bg_color();
+int png_load_bg_color(unsigned char *red, unsigned char *green,
+    unsigned char *blue);
 
 unsigned char* readpng_get_image(double display_exponent, int *pChannels,
     unsigned long *pRowbytes);
