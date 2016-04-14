@@ -9,8 +9,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "png_reader.h"
+#include "readpng.h"
+#include "writepng.h"
 
 #define ARG_LENGTH 3
+
+#define FAIL_BAD_FILE 80
 
 #endif

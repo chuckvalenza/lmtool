@@ -4,16 +4,7 @@
  * Author: Chuck Valenza
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-//#include "png_reader.h"
-#include "readpng.h"
-#include "writepng.h"
-
-#define ARG_LENGTH 3
-
-#define FAIL_BAD_FILE 80
+#include "lmtool.h"
 
 void print_usage()
 {
@@ -26,13 +17,15 @@ void print_usage()
 
 unsigned char* load_png(FILE* infile, long* pWidth, long* pHeight)
 {
-    if (png_init(infile, pWidth, pHeight) != 0) {
+    if (readpng_init(infile, pWidth, pHeight) != 0) {
+        fclose(infile);
         exit(FAIL_BAD_FILE);
     }
 
     unsigned char r, g, b;
 
-    if (png_load_bg_color(&r, &g, &b) != 0) {
+    if (readpng_get_bgcolor(&r, &g, &b) != 0) {
+        fclose(infile);
         exit(FAIL_BAD_FILE);
     }
 }
