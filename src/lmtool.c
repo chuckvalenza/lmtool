@@ -27,6 +27,10 @@ unsigned char* load_png(FILE* infile, long* pWidth, long* pHeight)
     if(png_init(infile, pWidth, pHeight) != 0) {
         exit(FAIL_BAD_FILE);
     }
+
+    if(png_load_bg_color() != 0) {
+        exit(FAIL_BAD_FILE);
+    }
 }
 
 int main(int argc, char** argv)
@@ -39,7 +43,7 @@ int main(int argc, char** argv)
     long image_height;
     long output_width = atol(argv[2]);
     long output_height = atol(argv[3]);
-    unsigned char* image_data = NULL;
+    long** image_data = NULL;
     FILE* infile = fopen(argv[1], "r");
 
     char filename[1024];

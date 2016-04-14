@@ -12,16 +12,16 @@
 #include "png.h"
 
 static png_structp png_ptr = NULL;
-static png_infop info = NULL;
+static png_infop info_ptr = NULL;
 png_uint_32  width, height;
 int bit_depth, color_type;
+unsigned char* png_image;
 
 void readpng_version_info(void);
 
 int png_init(FILE* infile, long* pWidth, long* pHeight);
 
-int readpng_get_bgcolor(unsigned char *bg_red, unsigned char *bg_green,
-    unsigned char *bg_blue);
+int png_load_bg_color();
 
 unsigned char* readpng_get_image(double display_exponent, int *pChannels,
     unsigned long *pRowbytes);
