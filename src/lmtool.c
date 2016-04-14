@@ -24,18 +24,18 @@ void print_usage()
 
 unsigned char* load_png(FILE* infile, long* pWidth, long* pHeight)
 {
-    if(png_init(infile, pWidth, pHeight) != 0) {
+    if (png_init(infile, pWidth, pHeight) != 0) {
         exit(FAIL_BAD_FILE);
     }
 
-    if(png_load_bg_color() != 0) {
+    if (png_load_bg_color() != 0) {
         exit(FAIL_BAD_FILE);
     }
 }
 
 int main(int argc, char** argv)
 {
-    if(argc != (ARG_LENGTH + 1)) {
+    if (argc != (ARG_LENGTH + 1)) {
         print_usage();
     }
 

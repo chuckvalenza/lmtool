@@ -16,24 +16,24 @@ int png_init(FILE* infile, long* pWidth, long* pHeight)
 
     // check for a bad signature in the file; ensures this is a PNG file
     fread(sig, 1, 8, infile);
-    if(!png_check_sig(sig, 8))
+    if (!png_check_sig(sig, 8))
         return 1;
 
     png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL,
         NULL, NULL);
     
-    if(!png_ptr) {
+    if (!png_ptr) {
         return 1;
     }
 
     info_ptr = png_create_info_struct(png_ptr);
 
-    if(!info_ptr) {
+    if (!info_ptr) {
         png_destroy_read_struct(&png_ptr, NULL, NULL);
         return 1;
     }
 
-    if(setjmp(png_jmpbuf(png_ptr))) {
+    if (setjmp(png_jmpbuf(png_ptr))) {
         png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
         return 1;
     }
@@ -64,25 +64,25 @@ int png_load_bg_color(unsigned char *red, unsigned char *green,
 {
     png_color_16p pBackground;
 
-    if(setjmp(png_jmpbuf(png_ptr))) {
+    if (setjmp(png_jmpbuf(png_ptr))) {
         png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
         return 1;
     }
 
-    if(!png_get_valid(png_ptr, info_ptr, PNG_INFO_bKGD)) {
+    if (!png_get_valid(png_ptr, info_ptr, PNG_INFO_bKGD)) {
         return 1;
     }
 
     png_get_bKGD(png_ptr, info_ptr, &pBackground);
 
-    if(bit_depth == 16) {
+    if (bit_depth == 16) {
         *red = pBackground->red >> 8;
         *green = pBackground->green >> 8;
         *blue = pBackground->blue >> 8;
-    } else if(color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) {
-        if(bit_depth == 1) {
+    } else if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) {
+        if (bit_depth == 1) {
             *red = *green = *blue = pBackground->gray ? 255 : 0;
-        } else if(bit_depth == 2) {
+        } else if (bit_depth == 2) {
             *red = *green = *blue = (255 / 3) * pBackground->gray;
         } else {
             *red = *green = *blue = (255 / 15) * pBackground->gray;
