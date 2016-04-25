@@ -28,16 +28,20 @@ struct lp_cell** allocate_lparray(long width, long height)
 void lp_transform(unsigned char* image_data, struct lp_cell* **lp_arr,
     unsigned long byte_count, long in_w, long in_h, long out_w, long out_h)
 {
+    // center pixel of the image
+    struct pixel* cent_p = malloc(sizeof(struct pixel));
+    cent_p->x = in_w / 2;
+    cent_p->y = in_h / 2;
+
     // only check if within largest circle
-    // create largest circle by 
     for (int row = 0; row < in_w; row++) {
         for (int col = 0; col < in_h; col++) {
-            struct pixel* cur = malloc(sizeof(struct pixel));
-            cur->x = col;
-            cur->y = row;
+            struct pixel* cur_p = malloc(sizeof(struct pixel));
+            cur_p->x = col;
+            cur_p->y = row;
 
             // don't do anything unless in the radius of our overlayed circle
-            if (in_overlay_range(cur, in_w, in_h)) {
+            if (in_circ(cur_p, cent_p, in_w / 2)) {
                 fprintf(stderr, "computing for pixel in overlay\n");
             } else {
                 fprintf(stderr, "discarding pixel out of overlay\n");
@@ -49,14 +53,8 @@ void lp_transform(unsigned char* image_data, struct lp_cell* **lp_arr,
 /**
  * check if the pixel is within the range of our overlay image
  */
-int in_overlay_range(struct pixel* p, long w, long h)
+int in_circ(struct pixel* p, struct pixel* cent, double radius)
 {
-    long radius = w / 2;
-    struct pixel* cent = malloc(sizeof(struct pixel));
-
-    cent->x = w / 2;
-    cent->y = h / 2;
-
     // calculate distance from the center
     double x_sqr = pow(abs(p->x - cent->x), 2);
     double y_sqr = pow(abs(p->y - cent->y), 2);
