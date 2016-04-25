@@ -17,5 +17,6 @@ build/%.o: src/%.c
 
 directories:
 	mkdir -p bin build
+
 clean:
 	-@rm build/*.o build/*.d $(EXEC) 2>/dev/null || true
