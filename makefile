@@ -2,7 +2,7 @@
 
 CC = gcc
 CFLAGS = -g -std=c11 -MMD
-LIB = -lpng -lz
+LIB = -lm -lpng -lz
 EXEC = bin/lmtool
 SRCS = $(wildcard src/*.c)
 OBJS = $(addprefix build/,$(notdir $(SRCS:.c=.o)))

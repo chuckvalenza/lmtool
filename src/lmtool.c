@@ -5,6 +5,7 @@
  */
 
 #include "lmtool.h"
+#include "lpt.h"
 
 /**
  * simply print the usage of the tool
@@ -31,11 +32,13 @@ unsigned char* load_png(FILE* infile, long* pWidth, long* pHeight,
 
     unsigned char r, g, b;
 
+/*
     if (readpng_get_bgcolor(&r, &g, &b) != 0) {
         fclose(infile);
+        fprintf(stderr, "Error reading background color of image.\n");
         exit(FAIL_BAD_FILE);
     }
-
+*/
     return readpng_get_image(image_channels, image_rowbytes);
 }
 
@@ -72,8 +75,8 @@ int main(int argc, char** argv)
 
     struct lp_cell** lp_grid = allocate_lparray(output_width, output_height);
 
-    lp_transform(image_data, &lp_grid, image_rowbytes, input_width,
-        input_height, output_width, output_height);
+    lp_transform(image_data, &lp_grid, image_rowbytes, image_width,
+        image_height, output_width, output_height);
 
     return 0;
 }

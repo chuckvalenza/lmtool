@@ -5,6 +5,7 @@
  */
 
 #include "lpt.h"
+#include <math.h>
 
 /**
  * malloc a log-polar grid
@@ -37,9 +38,9 @@ void lp_transform(unsigned char* image_data, struct lp_cell* **lp_arr,
 
             // don't do anything unless in the radius of our overlayed circle
             if (in_overlay_range(cur, in_w, in_h)) {
-                fprintf(stderr, "computing for pixel in overlay");
+                fprintf(stderr, "computing for pixel in overlay\n");
             } else {
-                fprintf(stderr, "discarding pixel out of overlay");
+                fprintf(stderr, "discarding pixel out of overlay\n");
             }
         }
     }
@@ -56,8 +57,11 @@ int in_overlay_range(struct pixel* p, long w, long h)
     cent->x = w / 2;
     cent->y = h / 2;
 
-    // sqrt(x^2 + y^2)
-    long dist = pow((pow(x, 2) + pow(x, 2)), 0.5);
+    // calculate distance from the center
+    double x_sqr = pow(abs(p->x - cent->x), 2);
+    double y_sqr = pow(abs(p->y - cent->y), 2);
+    double dist = pow(x_sqr + y_sqr, 0.5);
+
     if (dist < radius) {
         return 0;
     } else {

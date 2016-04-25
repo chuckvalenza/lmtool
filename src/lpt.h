@@ -9,6 +9,7 @@
 
 struct lp_cell {
     long npixels;
+    double dist; // distance from center is the scaling factor
     long r;
     long g;
     long b;
