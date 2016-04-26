@@ -7,6 +7,10 @@
 #include "lpt.h"
 #include <math.h>
 
+
+int in_circ(struct pixel* p, struct pixel* cent, double radius);
+struct lp_cell* get_cell(struct pixel* p);
+
 /**
  * malloc a log-polar grid and initialize all values
  */
