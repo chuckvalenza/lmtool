@@ -10,7 +10,7 @@
 /**
  * malloc a log-polar grid and initialize all values
  */
-struct lp_cell** allocate_lparray(long width, long height)
+struct lp_cell** lp_allocate_grid(long width, long height)
 {
     struct lp_cell** lparr = malloc(sizeof(struct lp_cell*) * width);
 

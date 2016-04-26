@@ -72,7 +72,7 @@ int main(int argc, char** argv)
     // free png data from memory, but not the image_data we just read in
     readpng_cleanup(0);
 
-    struct lp_cell** lp_grid = allocate_lparray(output_width, output_height);
+    struct lp_cell** lp_grid = lp_allocate_grid(output_width, output_height);
 
     lp_transform(image_data, &lp_grid, image_rowbytes, image_width,
         image_height, output_width, output_height);
