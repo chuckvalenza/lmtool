@@ -32,13 +32,12 @@ unsigned char* load_png(FILE* infile, long* pWidth, long* pHeight,
 
     unsigned char r, g, b;
 
-/*
-    if (readpng_get_bgcolor(&r, &g, &b) != 0) {
+    if (readpng_get_bgcolor(&r, &g, &b) > 1) {
         fclose(infile);
         fprintf(stderr, "Error reading background color of image.\n");
         exit(FAIL_BAD_FILE);
     }
-*/
+
     return readpng_get_image(image_channels, image_rowbytes);
 }
 
