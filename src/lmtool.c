@@ -5,7 +5,6 @@
  */
 
 #include "lmtool.h"
-#include "lpt.h"
 
 /**
  * simply print the usage of the tool

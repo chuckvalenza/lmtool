@@ -11,6 +11,7 @@
 #include <string.h>
 #include "readpng.h"
 #include "writepng.h"
+#include "lpt.h"
 
 #define ARG_LENGTH 3
 
