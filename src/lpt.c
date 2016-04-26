@@ -9,7 +9,7 @@
 
 
 int in_circ(struct pixel* p, struct pixel* cent, double radius);
-struct lp_cell* get_cell(struct pixel* p);
+struct lp_cell* get_cell(struct pixel* p, struct lp_cell** *lp_grid);
 
 /**
  * malloc a log-polar grid and initialize all values
@@ -34,10 +34,18 @@ struct lp_cell** lp_allocate_grid(long width, long height)
 }
 
 /**
- * Perform the transformation by calculating the averages in each circle
- * and return the value in a linear grid: lp_arr
+ * Initialize the sizes of each cell in the log polar grid
  */
-void lp_transform(unsigned char* image_data, struct lp_cell* **lp_arr,
+void lp_init_grid(struct lp_cell** *lp_grid, long out_w, long out_h)
+{
+    // need to implement
+}
+
+/**
+ * Perform the transformation by calculating the averages in each circle
+ * and return the value in a linear grid: lp_grid
+ */
+void lp_transform(unsigned char* image_data, struct lp_cell** *lp_grid,
     unsigned long byte_count, long in_w, long in_h, long out_w, long out_h)
 {
     struct pixel* cur_p = NULL;
@@ -56,7 +64,7 @@ void lp_transform(unsigned char* image_data, struct lp_cell* **lp_arr,
             // don't do anything unless in the radius of our overlayed circle
             if (in_circ(cur_p, cent_p, in_w / 2)) {
                 // get the cell which the pixel belongs to
-                struct lp_cell* cur_cell = get_cell(cur_p);
+                struct lp_cell* cur_cell = get_cell(cur_p, lp_grid);
 
                 // if the current pixel is in the circle approx of the current 
                 // cell add it to the grey value of that current cell.
@@ -91,9 +99,18 @@ int in_circ(struct pixel* p, struct pixel* cent, double radius)
 /**
  * Return the pointer to the corresponding pointer of the current pixel
  */
-struct lp_cell* get_cell(struct pixel* p)
+struct lp_cell* get_cell(struct pixel* p, struct lp_cell** *lp_grid)
 {
-    struct lp_cell* lpc;
+    struct lp_cell* lpc = malloc(sizeof(struct lp_cell));
+
+    // get rho
+    // rho = natlog(pow(x^2 + y^2, 0.5));
+    // get the rotation
+    // theta = arctan(y / x);
+
+    // get and return the pointer to the cell
+    // via the rho-theta coordinates in the allocated lp_grid
+    // lp_grid[rho][theta]
 
     return lpc;
 }

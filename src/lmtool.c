@@ -74,6 +74,9 @@ int main(int argc, char** argv)
 
     struct lp_cell** lp_grid = lp_allocate_grid(output_width, output_height);
 
+    // set up distances of each cell to the image
+    lp_init_grid(&lp_grid, output_width, output_height);
+
     lp_transform(image_data, &lp_grid, image_rowbytes, image_width,
         image_height, output_width, output_height);
 
