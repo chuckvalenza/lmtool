@@ -7,6 +7,7 @@
 #include "lpt.h"
 #include <math.h>
 
+#define M_E 2.718281828459045235360287471352662497757247093699959574966
 
 int in_circ(struct pixel* p, struct pixel* cent, double radius);
 struct lp_cell* get_cell(struct pixel* p, struct lp_cell** *lp_grid);
@@ -16,21 +17,21 @@ struct lp_cell* get_cell(struct pixel* p, struct lp_cell** *lp_grid);
  */
 struct lp_cell** lp_allocate_grid(long width, long height)
 {
-    struct lp_cell** lparr = malloc(sizeof(struct lp_cell*) * width);
+    struct lp_cell** lp_grid = malloc(sizeof(struct lp_cell*) * width);
 
     for (int i = 0; i < width; i++) {
-        lparr[i] = malloc(sizeof(struct lp_cell) * height);
-        lparr[i]->cent = malloc(sizeof(struct pixel));
-        lparr[i]->cent->x = 0;
-        lparr[i]->cent->y = 0;
-        lparr[i]->dist = 0;
-        lparr[i]->npixels = 0;
-        lparr[i]->r = 0;
-        lparr[i]->g = 0;
-        lparr[i]->b = 0;
+        lp_grid[i] = malloc(sizeof(struct lp_cell) * height);
+        lp_grid[i]->cent = malloc(sizeof(struct pixel));
+        lp_grid[i]->cent->x = 0;
+        lp_grid[i]->cent->y = 0;
+        lp_grid[i]->dist = 0;
+        lp_grid[i]->npixels = 0;
+        lp_grid[i]->r = 0;
+        lp_grid[i]->g = 0;
+        lp_grid[i]->b = 0;
     }
 
-    return lparr;
+    return lp_grid;
 }
 
 /**
@@ -38,7 +39,20 @@ struct lp_cell** lp_allocate_grid(long width, long height)
  */
 void lp_init_grid(struct lp_cell** *lp_grid, long out_w, long out_h)
 {
-    // need to implement
+    double radius = out_w;
+    long prev_r;
+
+    for (long row = 0; row < out_h; row++) {
+        for (long col = out_w; col > 0; col--) {
+            if ((long)radius == prev_r) {
+                break;
+            }
+
+            prev_r = (long)radius;
+            radius /= M_E;
+            lp_grid[row][col - 1]->radius = radius;
+        }
+    }
 }
 
 /**
@@ -101,16 +115,18 @@ int in_circ(struct pixel* p, struct pixel* cent, double radius)
  */
 struct lp_cell* get_cell(struct pixel* p, struct lp_cell** *lp_grid)
 {
+    // only implemented to avoid segfaults while testing
+    // still needs implementation
     struct lp_cell* lpc = malloc(sizeof(struct lp_cell));
 
-    // get rho
-    // rho = natlog(pow(x^2 + y^2, 0.5));
-    // get the rotation
-    // theta = arctan(y / x);
-
-    // get and return the pointer to the cell
-    // via the rho-theta coordinates in the allocated lp_grid
-    // lp_grid[rho][theta]
+    lpc->cent = malloc(sizeof(struct pixel));
+    lpc->cent->x = 0;
+    lpc->cent->y = 0;
+    lpc->dist = 0;
+    lpc->npixels = 0;
+    lpc->r = 0;
+    lpc->g = 0;
+    lpc->b = 0;
 
     return lpc;
 }
