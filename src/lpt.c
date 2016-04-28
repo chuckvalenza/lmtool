@@ -17,18 +17,21 @@ struct lp_cell* get_cell(struct pixel* p, struct lp_cell** *lp_grid);
  */
 struct lp_cell** lp_allocate_grid(long width, long height)
 {
-    struct lp_cell** lp_grid = malloc(sizeof(struct lp_cell*) * width);
+    struct lp_cell** lp_grid = malloc(sizeof(struct lp_cell*) * height);
 
-    for (int i = 0; i < width; i++) {
-        lp_grid[i] = malloc(sizeof(struct lp_cell) * height);
-        lp_grid[i]->cent = malloc(sizeof(struct pixel));
-        lp_grid[i]->cent->x = 0;
-        lp_grid[i]->cent->y = 0;
-        lp_grid[i]->dist = 0;
-        lp_grid[i]->npixels = 0;
-        lp_grid[i]->r = 0;
-        lp_grid[i]->g = 0;
-        lp_grid[i]->b = 0;
+    for (int y = 0; y < height; y++) {
+        lp_grid[y] = malloc(sizeof(struct lp_cell*) * width);
+
+        for (int x = 0; x < width; x++) {
+            lp_grid[y][x].cent = malloc(sizeof(struct pixel));
+            lp_grid[y][x].cent->x = 0;
+            lp_grid[y][x].cent->y = 0;
+            lp_grid[y][x].dist = 0;
+            lp_grid[y][x].npixels = 0;
+            lp_grid[y][x].r = 0;
+            lp_grid[y][x].g = 0;
+            lp_grid[y][x].b = 0;
+        }
     }
 
     return lp_grid;
