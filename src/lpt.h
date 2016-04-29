@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <tiffio.h>
 
 struct lp_cell {
     struct pixel* cent;
@@ -27,7 +28,7 @@ struct pixel {
 
 struct lp_cell** lp_allocate_grid(long width, long height);
 
-void lp_transform(unsigned char* image_data, struct lp_cell** *lp_grid,
-    unsigned long byte_count, long in_w, long in_h, long out_w, long out_h);
+void lp_transform(struct pixel** image_data, struct lp_cell** *lp_grid,
+    long in_w, long in_h, long out_w, long out_h);
 
 void lp_init_grid(struct lp_cell** *lp_grid, long out_w, long out_h);

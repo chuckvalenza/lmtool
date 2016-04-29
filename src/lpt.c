@@ -20,7 +20,7 @@ struct lp_cell** lp_allocate_grid(long width, long height)
     struct lp_cell** lp_grid = malloc(sizeof(struct lp_cell*) * height);
 
     for (int y = 0; y < height; y++) {
-        lp_grid[y] = malloc(sizeof(struct lp_cell*) * width);
+        lp_grid[y] = malloc(sizeof(struct lp_cell) * width);
 
         for (int x = 0; x < width; x++) {
             lp_grid[y][x].cent = malloc(sizeof(struct pixel));
@@ -62,8 +62,8 @@ void lp_init_grid(struct lp_cell** *lp_grid, long out_w, long out_h)
  * Perform the transformation by calculating the averages in each circle
  * and return the value in a linear grid: lp_grid
  */
-void lp_transform(unsigned char* image_data, struct lp_cell** *lp_grid,
-    unsigned long byte_count, long in_w, long in_h, long out_w, long out_h)
+void lp_transform(struct pixel** image_data, struct lp_cell** *lp_grid,
+    long in_w, long in_h, long out_w, long out_h)
 {
     struct pixel* cur_p = NULL;
     // center pixel of the image
@@ -74,9 +74,7 @@ void lp_transform(unsigned char* image_data, struct lp_cell** *lp_grid,
     // only check if within largest circle
     for (int row = 0; row < in_h; row++) {
         for (int col = 0; col < in_w; col++) {
-            cur_p = malloc(sizeof(struct pixel));
-            cur_p->x = col;
-            cur_p->y = row;
+            cur_p = &(image_data[row][col]);
 
             // don't do anything unless in the radius of our overlayed circle
             if (in_circ(cur_p, cent_p, in_w / 2)) {
