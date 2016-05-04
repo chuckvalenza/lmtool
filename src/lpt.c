@@ -8,9 +8,12 @@
 #include <math.h>
 
 #define M_E 2.718281828459045235360287471352662497757247093699959574966
+#define M_PI 3.141592653589793238462643383279502884197169399375105820974
+
+double radians = M_PI / 180.0;
 
 int in_circ(struct pixel* p, struct pixel* cent, double radius);
-struct lp_cell* get_cell(struct pixel* p, struct lp_cell** *lp_grid);
+struct lp_cell* get_cell(struct pixel* p, struct lp_cell** *lp_grid, long out_w, long out_h);
 
 /**
  * malloc a log-polar grid and initialize all values
@@ -37,22 +40,54 @@ void lp_allocate_grid(struct lp_cell** *lp_grid, long width, long height)
 }
 
 /**
- * Initialize the sizes of each cell in the log polar grid
+ * Initialize the sizes of each cell in the log polar grid corresponding to the
+ * input image; creates the overlay.
  */
-void lp_init_grid(struct lp_cell** *lp_grid, long out_w, long out_h)
+void lp_init_grid(struct lp_cell** *lp_grid, double bounding_r, long out_w, long out_h)
 {
-    double radius = out_w;
-    long prev_r;
+    double diameter;
+    double prev_d;
+    double theta;
+    double d_theta = (double)360 / out_w;
 
-    for (long row = 0; row < out_h; row++) {
-        for (long col = out_w; col > 0; col--) {
-            if ((long)radius == prev_r) {
-                break;
+    for (long col = out_w - 1; col >= 0; col--) {
+        diameter = bounding_r;
+
+        for (long row = 0; row < out_h; row++) {
+            struct lp_cell* cur = &((*lp_grid)[col][row]);
+
+            // calculate radius of cell. zero if it can't fit a pixel
+            cur->radius = diameter / (2 * M_E);
+
+            if (cur->radius * 2 < 1) {
+                cur->radius = 0;
             }
 
-            prev_r = (long)radius;
-            radius /= M_E;
-            lp_grid[row][col - 1]->radius = radius;
+            // calculate distance from center of overlay
+            prev_d = diameter;
+            diameter -= (cur->radius * 2);
+
+            cur->dist = diameter + ((prev_d - diameter) / 2);
+
+            // calculate x and y coordinates of the center of each cell
+            theta = (col * d_theta) * radians;
+
+
+            if (theta < 0.5 * M_PI) {
+                cur->x = bounding_r + cur->dist * cos(theta);
+                cur->y = cur->dist * sin(theta);
+            } else if (theta < M_PI) {
+                cur->x = cur->dist * cos(theta);
+                cur->y = cur->dist * sin(theta);
+            } else if (theta < 1.5 * M_PI) {
+                cur->x = cur->dist * cos(theta);
+                cur->y = bounding_r + cur->dist * sin(theta);
+            } else {
+                cur->x = bounding_r + cur->dist * cos(theta);
+                cur->y = bounding_r + cur->dist * sin(theta);
+            }
+            cur->cent->x = cur->x;
+            cur->cent->y = cur->y;
         }
     }
 }
@@ -78,7 +113,7 @@ void lp_transform(struct pixel** image_data, struct lp_cell** *lp_grid,
             // don't do anything unless in the radius of our overlayed circle
             if (in_circ(cur_p, cent_p, in_w / 2)) {
                 // get the cell which the pixel belongs to
-                struct lp_cell* cur_cell = get_cell(cur_p, lp_grid);
+                struct lp_cell* cur_cell = get_cell(cur_p, lp_grid, out_w, out_h);
 
                 // if the current pixel is in the circle approx of the current 
                 // cell add it to the grey value of that current cell.
@@ -113,10 +148,26 @@ int in_circ(struct pixel* p, struct pixel* cent, double radius)
 /**
  * Return the pointer to the corresponding pointer of the current pixel
  */
-struct lp_cell* get_cell(struct pixel* p, struct lp_cell** *lp_grid)
+struct lp_cell* get_cell(struct pixel* p, struct lp_cell** *lp_grid, long out_w, long out_h)
 {
     // only implemented to avoid segfaults while testing
     // still needs implementation
+
+    for (long r = 0; r < out_h; r++) {
+        for (long c = 0; c < out_w; c++) {
+            double diam = (*lp_grid)[r][c].radius * 2;
+            double cell_left = (*lp_grid)[r][c].x - (*lp_grid)[r][c].radius;
+            double cell_right = cell_left + diam;
+            double cell_top = (*lp_grid)[r][c].y - (*lp_grid)[r][c].radius;
+            double cell_bot = cell_top + diam;
+
+            if (cell_left < p->x && p->x < cell_right
+                && cell_top < p->y && p->y < cell_bot) {
+                return &((*lp_grid)[r][c]);
+            }
+        }
+    }
+
     struct lp_cell* lpc = malloc(sizeof(struct lp_cell));
 
     lpc->cent = malloc(sizeof(struct pixel));
@@ -124,6 +175,7 @@ struct lp_cell* get_cell(struct pixel* p, struct lp_cell** *lp_grid)
     lpc->cent->y = 0;
     lpc->dist = 0;
     lpc->npixels = 0;
+    lpc->radius = 0;
     lpc->r = 0;
     lpc->g = 0;
     lpc->b = 0;
