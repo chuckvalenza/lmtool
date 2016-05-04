@@ -79,6 +79,12 @@ struct pixel** tiff_to_img(TIFF* infile, long* height, long* width)
     return pix_grid;
 }
 
+uint32 avg(long v, long n)
+{
+    double ret = (double)v / (double)n;
+    return (uint32)ret;
+}
+
 /**
  * Write the data to the output image
  */
@@ -89,16 +95,36 @@ int grid_to_tiff(TIFF* outfile, struct lp_cell** grid, long out_w, long out_h)
         exit(-1);
     }
 
-    uint32* raster = malloc(sizeof(uint32) * out_w * out_h);
+    int bytes_per_pixel = 3;
+    uint32 rowsperstrip = TIFFDefaultStripSize(outfile, -1); 
 
-    TIFFSetField(outfile, TIFFTAG_IMAGEWIDTH, &out_w);
-    TIFFSetField(outfile, TIFFTAG_IMAGELENGTH, &out_h);
+    TIFFSetField(outfile, TIFFTAG_IMAGEWIDTH, out_w);
+    TIFFSetField(outfile, TIFFTAG_IMAGELENGTH, out_h);
+    TIFFSetField(outfile, TIFFTAG_ROWSPERSTRIP, rowsperstrip);
+    TIFFSetField(outfile, TIFFTAG_SAMPLESPERPIXEL, bytes_per_pixel);
+    TIFFSetField(outfile, TIFFTAG_BITSPERSAMPLE, 8);
+    TIFFSetField(outfile, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
+    TIFFSetField(outfile, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
+    TIFFSetField(outfile, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
+    TIFFSetField(outfile, TIFFTAG_ROWSPERSTRIP,
+        TIFFDefaultStripSize(outfile, out_w * bytes_per_pixel));
+
+    size_t linebytes = bytes_per_pixel * out_w;
 
     // construct the raster
-    for (int row = 0; row < out_w; row++) {
+    for (uint32 row = 0; row < out_w; row++) {
+        unsigned char* buffer;
+
+        buffer = (unsigned char*)_TIFFmalloc(linebytes);
+
         for (int col = 0; col < out_h; col++) {
-            uint32 val = (uint32)(grid[row][col].r / grid[row][col].npixels);
-            raster[row * out_w + col] = val;
+            buffer[3 * col] = avg(grid[row][col].r, grid[row][col].npixels);
+            buffer[3 * col + 1] = avg(grid[row][col].g, grid[row][col].npixels);
+            buffer[3 * col + 2] = avg(grid[row][col].b, grid[row][col].npixels);
+        }
+
+        if (TIFFWriteScanline(outfile, buffer, row, 0) < 0) {
+            break;
         }
     }
 
