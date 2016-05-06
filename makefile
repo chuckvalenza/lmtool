@@ -2,7 +2,7 @@
 
 CC = gcc
 CFLAGS = -g -std=c11 -MMD
-LIB = -lm -ltiff -lz
+LIB = -lm -ltiff
 EXEC = bin/lmtool
 SRCS = $(wildcard src/*.c)
 OBJS = $(addprefix build/,$(notdir $(SRCS:.c=.o)))
@@ -10,10 +10,10 @@ OBJS = $(addprefix build/,$(notdir $(SRCS:.c=.o)))
 default: directories all
 
 all: $(OBJS)
-	$(CC) $(CFLAGS) $(LIB) $^ -o $(EXEC)
+	$(CC) $(CFLAGS) $^ -o $(EXEC) $(LIB)
 
 build/%.o: src/%.c
-	$(CC) $(CFLAGS) $(LIB) -c -o $@ $^
+	$(CC) $(CFLAGS) -c -o $@ $^ $(LIB)
 
 directories:
 	mkdir -p bin build
