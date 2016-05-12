@@ -6,7 +6,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <tiffio.h>
 
 struct point {
     double x;
@@ -21,7 +20,7 @@ struct lp_grid {
 
 struct lp_cell {
     struct point loc;
-    double dist; // distance from center is the scaling factor
+    double dist;
     double radius;
     long npixels;
     double r;
