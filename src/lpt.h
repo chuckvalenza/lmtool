@@ -8,29 +8,39 @@
 #include <stdlib.h>
 #include <tiffio.h>
 
+struct point {
+    double x;
+    double y;
+};
+
+struct lp_grid {
+    struct lp_cell** grid;
+    long width;
+    long height;
+};
+
 struct lp_cell {
-    struct pixel* cent;
+    struct point loc;
     double dist; // distance from center is the scaling factor
     double radius;
     long npixels;
-    double x;
-    double y;
-    long r;
-    long g;
-    long b;
+    double r;
+    double g;
+    double b;
 };
 
 struct pixel {
-    long x;
-    long y;
-    long r;
-    long g;
-    long b;
+    struct point loc;
+    double r;
+    double g;
+    double b;
 };
 
-void lp_allocate_grid(struct lp_cell** *lp_grid, long width, long height);
+void lp_create_grid(struct lp_grid* g, long output_width, long output_height);
 
-void lp_init_grid(struct lp_cell** *lp_grid, double bounding_r, long out_w, long out_h);
+void lp_allocate_grid(struct lp_grid* g);
 
-void lp_transform(struct pixel** image_data, struct lp_cell** *lp_grid,
-    long in_w, long in_h, long out_w, long out_h);
+void lp_init_grid(struct lp_grid* g, double ovl_rad);
+
+void lp_transform(struct lp_grid* grid, struct pixel** image_data,
+    long in_w, long in_h);
