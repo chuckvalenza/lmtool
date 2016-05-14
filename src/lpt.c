@@ -10,8 +10,8 @@
 #define M_E 2.718281828459045235360287471352662497757247093699959574966
 #define M_PI 3.141592653589793238462643383279502884197169399375105820974
 
+double SCALE_FACTOR = 2 * M_E;
 double radians = M_PI / 180.0;
-
 
 short in_circ(struct point p, struct point cent, double radius);
 struct lp_cell* get_cell(struct lp_grid* g, struct pixel* p);
@@ -65,47 +65,35 @@ void lp_allocate_grid(struct lp_grid* g)
  */
 void lp_init_grid(struct lp_grid* g, double ovl_rad)
 {
-    double dist;
-    double prev_d;
-
     double theta;
     double d_theta = 360.0 / g->width;
 
+    double next_dist = ovl_rad;
+    double outer_dist;
+    double cell_rad;
+    double cell_dist;
+
+    struct lp_cell* cur = NULL;
+
     for (long x = g->width - 1; x >= 0; x--) {
-        dist = ovl_rad;
+        outer_dist = next_dist;
+        cell_rad = outer_dist / SCALE_FACTOR;
+        cell_dist = outer_dist - cell_rad;
+        next_dist = cell_dist - cell_rad;
 
         for (long y = 0; y < g->height; y++) {
-            struct lp_cell* cur = &(g->grid[x][y]);
+            cur = &(g->grid[x][y]);
 
-            // calculate radius of cell; trunc to zero if it is too small
-            cur->radius = dist / (2 * M_E);
-
-            if (cur->radius * 2 < 1) {
-                cur->radius = 0;
-            }
-
-            // calculate distance from center of the overlay
-            prev_d = dist;
-            dist -= cur->radius * 2;
-            cur->dist = dist + ((prev_d - dist) / 2);
+            cur->radius = cell_rad;
+            cur->dist = cell_dist;
 
             // calculate x and y coordinates of the center of each cell
             theta = y * d_theta * radians;
 
-            if (theta < 0.5 * M_PI) {
-                cur->loc.x = ovl_rad + cur->dist * cos(theta);
-                cur->loc.y = cur->dist * sin(theta);
-            } else if (theta < M_PI) {
-                cur->loc.x = cur->dist * cos(theta);
-                cur->loc.y = cur->dist * sin(theta);
-            } else if (theta < 1.5 * M_PI) {
-                cur->loc.x = cur->dist * cos(theta);
-                cur->loc.y = ovl_rad + cur->dist * sin(theta);
-            } else {
-                cur->loc.x = ovl_rad + cur->dist * cos(theta);
-                cur->loc.y = ovl_rad + cur->dist * sin(theta);
-            }
+            cur->loc.x = ovl_rad + cur->dist * cos(theta);
+            cur->loc.y = ovl_rad - cur->dist * sin(theta);
         }
+
     }
 }
 
@@ -138,8 +126,6 @@ void lp_transform(struct lp_grid* g, struct pixel** image_data,
                 // if the current pixel is in the circle approx of the current 
                 // cell add it to the grey value of that current cell.
                 if (in_circ(cur_pix->loc, cur_cell->loc, cur_cell->radius)) {
-
-
                     cur_cell->npixels++;
                     cur_cell->r += cur_pix->r;
                     cur_cell->g += cur_pix->g;
@@ -194,8 +180,8 @@ struct lp_cell* get_cell(struct lp_grid* g, struct pixel* p)
     // the overlay
     struct lp_cell* lpc = malloc(sizeof(struct lp_cell));
 
-    lpc->loc.x = 1;
-    lpc->loc.y = 2;
+    lpc->loc.x = -1;
+    lpc->loc.y = -1;
     lpc->dist = 0;
     lpc->npixels = -1;
     lpc->radius = 0;
