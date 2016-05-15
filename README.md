@@ -51,3 +51,13 @@ If you would like to recompile the program, run the following:
   $ make clean
   $ make
 ```
+
+####To do list:
+
+- [x] Read from tiff image
+- [x] Write to tiff image
+- [x] Read tiff data into pixel data
+- [x] Create log-polar overlay according to user input
+- [ ] Use hash map for get_cell
+- [ ] Support for non-square input and output images
+- [ ] Fit overlay radius properly onto image
