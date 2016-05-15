@@ -13,7 +13,7 @@ which performs the log-polar transform on an input pixel grid.
 example:
 
 ```bash
-  $ bin/lmtool sample_images/camera_man.tif sample_images/camera_man_out.tif 100 100
+  $ bin/lmtool in.tif out.tif 100 100
 ```
 
 ####Building:
